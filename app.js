@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(cors());
+app.options('*', cors());
 app.use('/public', express.static('public'));
 app.use('/products', productRoute)
 
