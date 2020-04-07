@@ -36,10 +36,11 @@ router.route('/add-product').post(upload.single('ImageOfProduct'),(req, res, nex
     const url = req.protocol + '://' + req.get('host')
     console.log(url)
     const product = new ProductSchema({
-       // _id: new mongoose.Types.ObjectId(),
+        _id: new mongoose.Types.ObjectId(),
         ProductName: req.body.ProductName,
         Category: req.body.Category,
         PricePerUnit: req.body.PricePerUnit,
+        SubCategory: req.body.SubCategory,
       ImageOfProduct: url + '/public/' + req.file.filename,
         StockAmount: req.body.StockAmount
     });
