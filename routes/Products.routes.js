@@ -36,7 +36,7 @@ router.route('/add-product').post(upload.single('ImageOfProduct'),(req, res, nex
     const url = req.protocol + '://' + req.get('host')
     console.log(url)
     const product = new ProductSchema({
-        _id: new mongoose.Types.ObjectId(),
+       // _id: new mongoose.Types.ObjectId(),
         ProductName: req.body.ProductName,
         Category: req.body.Category,
         PricePerUnit: req.body.PricePerUnit,
@@ -61,9 +61,20 @@ router.route('/add-product').post(upload.single('ImageOfProduct'),(req, res, nex
 
 });
 
-// READ Students
+// READ Products
 router.route('/').get((req, res) => {
     ProductSchema.find((error, data) => {
+        if (error) {
+            return next(error)
+        } else {
+            res.json(data)
+        }
+    })
+})
+
+// Get Single Student
+router.route('/view-product/:id').get((req, res) => {
+    ProductSchema.findById(req.params.id, (error, data) => {
         if (error) {
             return next(error)
         } else {
