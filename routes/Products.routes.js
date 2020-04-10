@@ -32,18 +32,28 @@ var upload = multer({
 let ProductSchema = require('../Model/Products');
 
 //Create Product
-router.route('/add-product').post(upload.single('ImageOfProduct'),(req, res, next) => {
+router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, next) => {
     const url = req.protocol + '://' + req.get('host')
     console.log(url)
+   console.log(req.body.ColorOfImg[0])
     const product = new ProductSchema({
         _id: new mongoose.Types.ObjectId(),
         ProductName: req.body.ProductName,
+        ProductBrand: req.body.ProductBrand,
         Category: req.body.Category,
         PricePerUnit: req.body.PricePerUnit,
         SubCategory: req.body.SubCategory,
-      ImageOfProduct: url + '/public/' + req.file.filename,
-        StockAmount: req.body.StockAmount
+        StockAmount: req.body.StockAmount,
+        ColorOfImg:  req.body.ColorOfImg
+
     });
+
+    for(var i=0;i<req.files.length;i++) {
+        product.ImageOfProduct[i] = url + '/public/' + req.files[i].filename
+        product.ColorOfImg[i] = req.body.ColorOfImg[i]
+        product.StockOfItem[i] = req.body.StockOfItem[i]
+
+    }
     product.save().then(result => {
         res.status(201).json({
             message: "User registered successfully!",
@@ -77,11 +87,23 @@ router.route('/').get((req, res) => {
 router.route('/view-product/:id').get((req, res) => {
     ProductSchema.findById(req.params.id, (error, data) => {
         if (error) {
+            return (error)
+        } else {
+            res.json(data)
+        }
+    })
+})
+
+router.route('/get-products/:id').get((req,res) => {
+    var Query = {SubCategory : req.params.id}
+    ProductSchema.find(Query, (error,data) => {
+        if (error) {
             return next(error)
         } else {
             res.json(data)
         }
     })
 })
+
 
 module.exports = router;

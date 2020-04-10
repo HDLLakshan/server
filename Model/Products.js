@@ -6,6 +6,9 @@ let productSchema = new Schema({
     ProductName: {
         type: String
     },
+    ProductBrand:{
+        type:String
+    },
     Category: {
         type: String
     },
@@ -15,11 +18,18 @@ let productSchema = new Schema({
     SubCategory: {
         type: String
     },
-    ImageOfProduct: {
-      type: String
+    ImageOfProduct:  {
+        type: Array
     },
+    ColorOfImg: {
+        type:Array
+    },
+
     StockAmount: {
         type: Number
+    },
+    StockOfItem: {
+        type:Array
     }
 }, {
     collection: 'products'
