@@ -28,7 +28,16 @@ let productSchema = new Schema({
     StockAmount: {
         type: Number
     },
-    StockOfItem: {
+    StockSmall: {
+        type:Array
+    },
+    StockMedium: {
+        type:Array
+    },
+    StockLarge: {
+        type:Array
+    },
+    StockXL: {
         type:Array
     }
 }, {

@@ -51,7 +51,10 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
     for(var i=0;i<req.files.length;i++) {
         product.ImageOfProduct[i] = url + '/public/' + req.files[i].filename
         product.ColorOfImg[i] = req.body.ColorOfImg[i]
-        product.StockOfItem[i] = req.body.StockOfItem[i]
+        product.StockSmall[i] = req.body.StockSmall[i]
+        product.StockMedium[i] = req.body.StockMedium[i]
+        product.StockLarge[i] = req.body.StockLarge[i]
+        product.StockXL[i] = req.body.StockXL[i]
 
     }
     product.save().then(result => {
