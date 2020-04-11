@@ -39,6 +39,9 @@ let productSchema = new Schema({
     },
     StockXL: {
         type:Array
+    },
+    AddDate: {
+        type:String,
     }
 }, {
     collection: 'products'

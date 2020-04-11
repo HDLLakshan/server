@@ -35,7 +35,7 @@ let ProductSchema = require('../Model/Products');
 router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, next) => {
     const url = req.protocol + '://' + req.get('host')
     console.log(url)
-   console.log(req.body.ColorOfImg[0])
+   //console.log(req.body.ColorOfImg[0])
     const product = new ProductSchema({
         _id: new mongoose.Types.ObjectId(),
         ProductName: req.body.ProductName,
@@ -55,8 +55,12 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
         product.StockMedium[i] = req.body.StockMedium[i]
         product.StockLarge[i] = req.body.StockLarge[i]
         product.StockXL[i] = req.body.StockXL[i]
-
     }
+    var datetime = new Date();
+    product.AddDate = datetime.toISOString().slice(0,10)
+
+
+
     product.save().then(result => {
         res.status(201).json({
             message: "User registered successfully!",
