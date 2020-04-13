@@ -4,7 +4,10 @@ let cors = require('cors');
 let bodyParser = require('body-parser');
 let dbConfig = require('./Database/db');
 
-const productRoute = require('./routes/Products.routes')
+const productRoute = require('./routes/Products.routes');
+const userRoute = require('./routes/user.route');
+const wishlistRoute = require('./routes/wishlist.route');
+const shoppingCartRoute = require('./routes/shoppingcart.route');
 
 const app = express();
 
@@ -28,9 +31,10 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.options('*', cors());
 app.use('/public', express.static('public'));
-app.use('/products', productRoute)
-
-
+app.use('/products', productRoute);
+app.use('/users', userRoute);
+app.use('/wishlist', wishlistRoute);
+app.use('/shoppingcart', shoppingCartRoute);
 
 
 var port = process.env.PORT || 4000;
