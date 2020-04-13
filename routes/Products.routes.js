@@ -58,7 +58,7 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
     }
     var datetime = new Date();
     product.AddDate = datetime.toISOString().slice(0,10)
-
+//coomt
 
 
     product.save().then(result => {
