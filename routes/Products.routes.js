@@ -80,8 +80,9 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
 });
 
 // READ Products
+
 router.route('/').get((req, res) => {
-    ProductSchema.find((error, data) => {
+    ProductSchema.find({}).sort({AddDate:'desc'}).exec((error,data) => {
         if (error) {
             return next(error)
         } else {
@@ -90,7 +91,7 @@ router.route('/').get((req, res) => {
     })
 })
 
-// Get Single Student
+// Get Single Product
 router.route('/view-product/:id').get((req, res) => {
     ProductSchema.findById(req.params.id, (error, data) => {
         if (error) {
@@ -111,6 +112,20 @@ router.route('/get-products/:id').get((req,res) => {
         }
     })
 })
+
+// search function
+
+
+router.route('/search/:id').get((req,res) => {
+   ProductSchema.find({$text: {$search: req.params.id}}, {score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).exec((error,data) => {
+       if (error) {
+           return next(error)
+       } else {
+           res.json(data)
+       }
+   })
+
+});
 
 
 module.exports = router;

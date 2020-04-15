@@ -45,7 +45,8 @@ let productSchema = new Schema({
     }
 }, {
     collection: 'products'
-    })
+    });
+productSchema.index({'$**': 'text'});
 
 
 module.exports = mongoose.model('Product', productSchema);
