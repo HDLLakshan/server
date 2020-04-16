@@ -9,6 +9,7 @@ const userRoute = require('./routes/user.route');
 const wishlistRoute = require('./routes/wishlist.route');
 const shoppingCartRoute = require('./routes/shoppingcart.route');
 const billingRoute = require('./routes/billing.route');
+const paymentRoute = require('./routes/payment.route');
 
 const app = express();
 
@@ -37,7 +38,7 @@ app.use('/users', userRoute);
 app.use('/wishlist', wishlistRoute);
 app.use('/shoppingcart', shoppingCartRoute);
 app.use('/billing',billingRoute);
-
+app.use('/payment',paymentRoute);
 
 var port = process.env.PORT || 4000;
 

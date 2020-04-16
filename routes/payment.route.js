@@ -2,13 +2,12 @@ let mongoose = require('mongoose'),
     express = require('express'),
     router = express.Router();
 
-// Billing Model
-let billingSchema = require('../Model/Billing');
+// Payment Model
+let paymentSchema = require('../Model/Payment');
 
-
-// CREATE Billing
-router.route('/add-billing').post((req, res, next) => {
-    billingSchema.create(req.body, (error, data) => {
+// Add payment
+router.route('/add-payment').post((req, res, next) => {
+    paymentSchema.create(req.body, (error, data) => {
         if (error) {
             return next(error)
         } else {
@@ -18,9 +17,9 @@ router.route('/add-billing').post((req, res, next) => {
     })
 });
 
-// READ Billing
-router.route('/get-billing').get((req, res) => {
-    billingSchema.find((error, data) => {
+// READ Payment
+router.route('/get-payment').get((req, res) => {
+    paymentSchema.find((error, data) => {
         if (error) {
             return next(error)
         } else {
@@ -29,8 +28,8 @@ router.route('/get-billing').get((req, res) => {
     })
 })
 
-router.route('/update-billing/:id').put((req, res, next) => {
-    billingSchema.findByIdAndUpdate(req.params.id, {
+router.route('/update-payment/:id').put((req, res, next) => {
+    paymentSchema.findByIdAndUpdate(req.params.id, {
         $set: req.body
     }, (error, data) => {
         if (error) {
@@ -38,14 +37,14 @@ router.route('/update-billing/:id').put((req, res, next) => {
             console.log(error)
         } else {
             res.json(data)
-            console.log('successfully updated billing !')
+            console.log('payment updated successfully !')
         }
     })
 })
 
-// Delete Student
-router.route('/delete-billing/:id').delete((req, res, next) => {
-    billingSchema.findByIdAndRemove(req.params.id, (error, data) => {
+// Delete payment
+router.route('/delete-payment/:id').delete((req, res, next) => {
+    paymentSchema.findByIdAndRemove(req.params.id, (error, data) => {
         if (error) {
             return next(error);
         } else {
@@ -56,9 +55,9 @@ router.route('/delete-billing/:id').delete((req, res, next) => {
     })
 })
 
-// Get Single Student
-router.route('/get-one-billing/:id').get((req, res) => {
-    billingSchema.findById(req.params.id, (error, data) => {
+// Get Single payment
+router.route('/single-payment/:id').get((req, res) => {
+    paymentSchema.findById(req.params.id, (error, data) => {
         if (error) {
             return next(error)
         } else {
@@ -67,9 +66,9 @@ router.route('/get-one-billing/:id').get((req, res) => {
     })
 })
 
-router.route('/getbill/:id').get((req,res) => {
+router.route('/getpayment/:id').get((req,res) => {
     var Query = {userName : req.params.id}
-    billingSchema.find(Query,(error,data) => {
+    paymentSchema.find(Query,(error,data) => {
         if(error){
             return next(error)
 
@@ -78,4 +77,5 @@ router.route('/getbill/:id').get((req,res) => {
         }
     })
 })
+
 module.exports = router;
