@@ -10,6 +10,7 @@ const wishlistRoute = require('./routes/wishlist.route');
 const shoppingCartRoute = require('./routes/shoppingcart.route');
 const billingRoute = require('./routes/billing.route');
 const paymentRoute = require('./routes/payment.route');
+const ratingRoute = require('./routes/rating.route');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/wishlist', wishlistRoute);
 app.use('/shoppingcart', shoppingCartRoute);
 app.use('/billing',billingRoute);
 app.use('/payment',paymentRoute);
+app.use('/rating',ratingRoute);
 
 var port = process.env.PORT || 4000;
 
