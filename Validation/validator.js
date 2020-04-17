@@ -30,7 +30,6 @@ module.exports = function validateRegisterInput(data) {
         errors.Email = "Email is invalid";
     }
 
-    // console.log("ffffffffffff");
     if (Validator.isEmpty(data.PasswordOne)) {
         errors.PasswordOne = "Password field is required";
     }
@@ -44,8 +43,6 @@ module.exports = function validateRegisterInput(data) {
         errors.PasswordTwo = "Passwords must match";
     }
 
-    // console.log("ffffffffffff");
-    // console.log(errors);
     return {
         errors,
         isValid: isEmpty(errors)

@@ -8,12 +8,8 @@ let userSchema = require('../Model/Users');
 let db= require('../Database/db');
 
 
-//router.route('/create-user').post((req, res, next) => {
-  router.post("/register", (req, res) =>{
-
+router.post("/register", (req, res) =>{
     const { errors, isValid } = validateRegisterInput(req.body);
-      console.log("dsdsd");
-
     if(!isValid){
         return res.json(errors);
     }
@@ -28,8 +24,6 @@ let db= require('../Database/db');
                 Email : req.body.Email,
                 PasswordOne : req.body.PasswordOne
             });
-            console.log("jsjsjs");
-console.log(newUser);
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(newUser.PasswordOne, salt, (err, hash) => {
                     if (err) throw err;
@@ -44,34 +38,11 @@ console.log(newUser);
     });
 });
 
-//     userSchema.create(req.body, (error,data) =>{
-//         if(error){
-//             return next(error);
-//         }else{
-//             console.log(data);
-//             res.json(data);
-//         }
-//     })
-// });
-
-// router.route('/check-user:Username').post((req, res) => {
-//     var query = {Username : req.params.Username};
-//     // console.log(query);
-//     // console.log(req.params.Username);
-//     userSchema.find(query).exec().then(user =>{
-//         res.json(user);
-//     }).catch(err => {
-//         console.error(err);
-//         res.sendStatus(500);
-//         });
-// });
-
 router.post("/login", (req, res) => {
-    // Form validation
     const { errors, isValid } = validateLoginInput(req.body);
 // Check validation
     if (!isValid) {
-        return res.status(400).json(errors);
+        return res.json(errors);
     }
     const Username = req.body.Username;
     const Password = req.body.Password;
@@ -79,7 +50,7 @@ router.post("/login", (req, res) => {
     userSchema.findOne({ Username }).then(user => {
         // Check if user exists
         if (!user) {
-            return res.status(404).json({ usernamenotfound: "Username not found" });
+            return res.json({ Username: "Username not found" });
         }
 
         bcrypt.compare(Password, user.PasswordOne).then(isMatch => {
@@ -102,13 +73,11 @@ router.post("/login", (req, res) => {
                             success: true,
                             token: "Bearer " + token
                         });
-                        console.log(token);
                     }
                 );
             } else {
                 return res
-                    .status(400)
-                    .json({ passwordincorrect: "Password incorrect" });
+                    .json({ Password: "Password incorrect" });
             }
         });
     });
