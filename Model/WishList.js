@@ -1,26 +1,11 @@
 const mongoose = require('mongoose');
 
 let wishListSchema = new mongoose.Schema({
-    ProductId: {
+    UserId: {
         type:String
     },
-    ProductName: {
-        type: String
-    },
-    Category: {
-        type: String
-    },
-    PricePerUnit: {
-        type: Number
-    },
-    SubCategory: {
-        type: String
-    },
-    ImageOfProduct: {
-        type: String
-    },
-    Quantity: {
-        type: Number
+    ProductObject:{
+        type : Array , "default" : []
     }
 }, {
     collection : 'wishlist'

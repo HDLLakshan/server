@@ -12,55 +12,30 @@ router.route('/add-to-wishlist').post((req, res, next)=>{
     })
 });
 
-router.route('/check-product:productId').post((req, res) => {
-    console.log("brppppp came ehere ");
-    var query = {ProductId : req.params.productId};
-    console.log(query);
-    console.log(req.params.productId);
+router.route('/check-product:userId').post((req, res) => {
+    var query = {UserId : req.params.userId};
     wishlistSchema.find(query).exec().then(user =>{
+        console.log(user);
         res.json(user);
     }).catch(err => {
         console.error(err);
         res.sendStatus(500);
     })
-    // var query = {name : req.params.name};
-    // wishlistSchema.count(query, function(err, count) {
-    //
-    //     if (count>0) {
-    //         //console.log(count);
-    //
-    //     } else {
-    //         console.log(count);
-    //     }
-    //
-    // })  //res.json(user);
 });
 
-router.route('/delete-product:productId').delete((req, res, next) => {
-    var query = {ProductId : req.params.productId};
-    wishlistSchema.remove(query, (error, data) => {
-        if (error) {
-            return next(error);
-        } else {
-            //res.json(data);
-            res.status(200).json({
-                msg: data
+router.route('/edit-details:userId').put((req, res, next) => {
+    var query = {UserId: req.params.userId};
+
+    wishlistSchema.updateOne(query, {$set:{ProductObject: req.body}}, (error, data) => {
+                if (error) {
+                    return next(error);
+                } else {
+                    console.log(data);
+                    return res.json(data);
+                }
             })
-        }
-    })
+
 });
-
-router.route('/get-wishlist').get((req, res,next) => {
-    wishlistSchema.find((error, data) => {
-        if (error) {
-            return next(error);
-        } else {
-            res.json(data);
-        }
-    })
-});
-
-
 
 
 module.exports = router;
