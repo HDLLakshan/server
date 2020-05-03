@@ -18,17 +18,17 @@ let productSchema = new Schema({
     SubCategory: {
         type: String
     },
-    ImageOfProduct:  {
+   /* ImageOfProduct:  {
         type: Array
     },
     ColorOfImg: {
         type:Array
-    },
+    }, */
 
     StockAmount: {
         type: Number
     },
-    StockSmall: {
+  /*  StockSmall: {
         type:Array
     },
     StockMedium: {
@@ -39,10 +39,11 @@ let productSchema = new Schema({
     },
     StockXL: {
         type:Array
-    },
+    }, */
     AddDate: {
         type:String,
-    }
+    },
+    Details:[],
 }, {
     collection: 'products'
     });
