@@ -93,7 +93,6 @@ console.log(req.params.Username);
 });
 
 router.route('/edit-details:Email').put((req, res, next) => {
-    console.log("bbbbbbbb");
     var query = {Email: req.params.Email};
     console.log(req.body);
     bcrypt.genSalt(10, (err, salt) => {
