@@ -1,5 +1,5 @@
 let mongoose = require('mongoose')
-express = require('express')
+var express = require('express')
 multer = require('multer')
 uuidv4 = require('uuid/v4'),
 router = express.Router();
@@ -44,26 +44,33 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
         PricePerUnit: req.body.PricePerUnit,
         SubCategory: req.body.SubCategory,
         StockAmount: req.body.StockAmount,
-        ColorOfImg:  req.body.ColorOfImg
+        //ColorOfImg:  req.body.ColorOfImg
 
     });
 
     for(var i=0;i<req.files.length;i++) {
-        product.ImageOfProduct[i] = url + '/public/' + req.files[i].filename
+    /*    product.ImageOfProduct[i] = url + '/public/' + req.files[i].filename
         product.ColorOfImg[i] = req.body.ColorOfImg[i]
         product.StockSmall[i] = req.body.StockSmall[i]
         product.StockMedium[i] = req.body.StockMedium[i]
         product.StockLarge[i] = req.body.StockLarge[i]
-        product.StockXL[i] = req.body.StockXL[i]
+        product.StockXL[i] = req.body.StockXL[i] */
+        product.Details.push({
+            "imgPath": url + '/public/' + req.files[i].filename,
+            "color" : req.body.ColorOfImg[i],
+            "small" : req.body.StockSmall[i],
+            "medium" : req.body.StockMedium[i],
+            "large" : req.body.StockLarge[i],
+            "xl" : req.body.StockXL[i]
+
+        })
     }
     var datetime = new Date();
     product.AddDate = datetime.toISOString().slice(0,10)
-//coomt
-
 
     product.save().then(result => {
         res.status(201).json({
-            message: "User registered successfully!",
+            message: "Product Saved successfully!",
             userCreated: {
                 _id: result._id,
                 ImageOfProduct: result.ImageOfProduct
