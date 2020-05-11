@@ -4,6 +4,7 @@ let cors = require('cors');
 let bodyParser = require('body-parser');
 let dbConfig = require('./Database/db');
 
+
 const productRoute = require('./routes/Products.routes');
 const userRoute = require('./routes/user.route');
 const wishlistRoute = require('./routes/wishlist.route');
@@ -14,11 +15,16 @@ const ratingRoute = require('./routes/rating.route');
 
 const app = express();
 
+const db = require("./Model");
+const Role = db.role;
+
 mongoose.Promise = global.Promise;
 mongoose.connect(dbConfig.db, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 }).then(() => {
-        console.log('Database sucessfully connected!')
+        console.log('Database sucessfully connected!');
+        initial();
     },
     error => {
         console.log('Could not connect to database : ' + error)
@@ -51,17 +57,54 @@ app.use((req, res, next) => {
     next(createError(404));
 });
 
-app.get('/',function(req,res) {
-    res.send('Hellow Wrold I m lahiru lakshan');
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.setheader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD");
-    next();
-});
+// app.get('/',function(req,res) {
+//     res.send('Hellow Wrold I m lahiru lakshan');
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     // res.setheader('Access-Control-Allow-Origin', 'http://localhost:3000');
+//     // response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD");
+//     next();
+// });
+
 app.use(function (err, req, res, next) {
     console.error(err.message);
     if (!err.statusCode) err.statusCode = 500;
     res.status(err.statusCode).send(err.message);
 });
 //app.listen(port, () => console.log('Server is running on port' + port))
+
+function initial() {
+    Role.estimatedDocumentCount((err, count) => {
+        if (!err && count === 0) {
+            new Role({
+                name: "user"
+            }).save(err => {
+                if (err) {
+                    console.log("error", err);
+                }
+
+                console.log("added 'user' to roles collection");
+            });
+
+            new Role({
+                name: "moderator"
+            }).save(err => {
+                if (err) {
+                    console.log("error", err);
+                }
+
+                console.log("added 'moderator' to roles collection");
+            });
+
+            new Role({
+                name: "admin"
+            }).save(err => {
+                if (err) {
+                    console.log("error", err);
+                }
+
+                console.log("added 'admin' to roles collection");
+            });
+        }
+    });
+}
