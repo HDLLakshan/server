@@ -4,7 +4,6 @@ let cors = require('cors');
 let bodyParser = require('body-parser');
 let dbConfig = require('./Database/db');
 
-
 const productRoute = require('./routes/Products.routes');
 const userRoute = require('./routes/user.route');
 const wishlistRoute = require('./routes/wishlist.route');
