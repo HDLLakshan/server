@@ -41,6 +41,7 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
         Category: req.body.Category,
         PricePerUnit: req.body.PricePerUnit,
         SubCategory: req.body.SubCategory,
+        Discount : req.body.Discount
     });
 
     for(var i=0;i<req.files.length;i++) {
@@ -161,7 +162,8 @@ router.route('/editProductsDetails/:id').put((req, res)=> {
                 "ProductBrand" : req.body.ProductBrand,
                 "Category" : req.body.Category,
                 "SubCategory" : req.body.SubCategory,
-                "PricePerUnit" : req.body.PricePerUnit
+                "PricePerUnit" : req.body.PricePerUnit,
+                "Discount" : req.body.Discount
             }
         },
         {new: true})
@@ -228,4 +230,16 @@ router.route('/deleteOneItemFromProduct/:id/:color').put((req,res) => {
     })
 });
 
+//delete Product
+router.route('/deleteProduct/:id').delete((req, res) => {
+    ProductSchema.findByIdAndRemove(req.params.id, (error, data) => {
+        if (error) {
+            return (error);
+        } else {
+            res.status(200).json({
+                msg: data
+            })
+        }
+    })
+})
 module.exports = router;

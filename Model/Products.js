@@ -18,7 +18,9 @@ let productSchema = new Schema({
     SubCategory: {
         type: String
     },
-
+    Discount: {
+        type: Number
+    },
     AddDate: {
         type:String,
     },
