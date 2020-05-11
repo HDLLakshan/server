@@ -34,8 +34,6 @@ let ProductSchema = require('../Model/Products');
 //Create Product
 router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, next) => {
     const url = req.protocol + '://' + req.get('host')
-    console.log(url)
-   //console.log(req.body.ColorOfImg[0])
     const product = new ProductSchema({
         _id: new mongoose.Types.ObjectId(),
         ProductName: req.body.ProductName,
@@ -43,18 +41,10 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
         Category: req.body.Category,
         PricePerUnit: req.body.PricePerUnit,
         SubCategory: req.body.SubCategory,
-        StockAmount: req.body.StockAmount,
-        //ColorOfImg:  req.body.ColorOfImg
-
+        Discount : req.body.Discount
     });
 
     for(var i=0;i<req.files.length;i++) {
-    /*    product.ImageOfProduct[i] = url + '/public/' + req.files[i].filename
-        product.ColorOfImg[i] = req.body.ColorOfImg[i]
-        product.StockSmall[i] = req.body.StockSmall[i]
-        product.StockMedium[i] = req.body.StockMedium[i]
-        product.StockLarge[i] = req.body.StockLarge[i]
-        product.StockXL[i] = req.body.StockXL[i] */
         product.Details.push({
             "imgPath": url + '/public/' + req.files[i].filename,
             "color" : req.body.ColorOfImg[i],
@@ -65,6 +55,7 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
 
         })
     }
+
     var datetime = new Date();
     product.AddDate = datetime.toISOString().slice(0,10)
 
@@ -87,7 +78,6 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
 });
 
 // READ Products
-
 router.route('/').get((req, res) => {
     ProductSchema.find({}).sort({AddDate:'desc'}).exec((error,data) => {
         if (error) {
@@ -109,8 +99,9 @@ router.route('/view-product/:id').get((req, res) => {
     })
 })
 
-router.route('/get-products/:id').get((req,res) => {
-    var Query = {SubCategory : req.params.id}
+// Get Products relevant to Category
+router.route('/get-products/:category').get((req,res) => {
+    var Query = {SubCategory : req.params.category}
     ProductSchema.find(Query, (error,data) => {
         if (error) {
             return next(error)
@@ -121,8 +112,6 @@ router.route('/get-products/:id').get((req,res) => {
 })
 
 // search function
-
-
 router.route('/search/:id').get((req,res) => {
    ProductSchema.find({$text: {$search: req.params.id}}, {score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).exec((error,data) => {
        if (error) {
@@ -134,5 +123,123 @@ router.route('/search/:id').get((req,res) => {
 
 });
 
+//update when purchase
+router.route('/sold/:id/:color/:size/:quantity').post(async (req,res) => {
 
+     ProductSchema.findById(req.params.id, (error, data) => {
+         const index = data.Details.map(e => e.color).indexOf(req.params.color);
+         const currentval = data.Details[index][req.params.size]
+         newVal = parseInt(currentval) - parseInt(req.params.quantity)
+
+
+         var s = "Details.$." + req.params.size;
+
+         ProductSchema.findOneAndUpdate(
+             {_id: req.params.id, "Details.color": req.params.color},
+             {
+                 $set: {
+                     [s]: newVal
+                 }
+             },
+             {new: true})
+             .then(() => {
+                 res.sendStatus(200);
+             }).catch(err => {
+             console.log("eorrrro")
+             console.error(err)
+         })
+     });
+})
+
+//update Products Details
+router.route('/editProductsDetails/:id').put((req, res)=> {
+
+    ProductSchema.findOneAndUpdate(
+        {_id:req.params.id},
+        {
+            $set: {
+                "ProductName" : req.body.ProductName,
+                "ProductBrand" : req.body.ProductBrand,
+                "Category" : req.body.Category,
+                "SubCategory" : req.body.SubCategory,
+                "PricePerUnit" : req.body.PricePerUnit,
+                "Discount" : req.body.Discount
+            }
+        },
+        {new: true})
+        .then(() => {
+            res.sendStatus(200);
+        }).catch(err => {
+        console.log("eorrrro")
+        console.error(err)
+    });
+
+})
+
+//update a Item of a Product
+router.route('/editItemOfProduct/:id').put((req,res) => {
+    ProductSchema.findOneAndUpdate(
+        {_id:req.params.id , "Details.color":req.body.color},
+        {
+            $set: {
+                "Details.$.small":req.body.small,
+                "Details.$.medium":req.body.medium,
+                "Details.$.large":req.body.large,
+                "Details.$.xl":req.body.xl,
+            }
+        },{new: true})
+        .then(() => {
+            res.sendStatus(200);
+        }).catch(err => {
+        console.log("error")
+        console.error(err)
+    });
+
+})
+
+//add newItem to currentProduct
+router.route('/addnewItemToProduct/:id').post(upload.array('image',5),(req,res) => {
+    const url = req.protocol + '://' + req.get('host')
+    ProductSchema.findByIdAndUpdate(req.params.id, {
+        $push: {
+            "Details" : {
+                "imgPath" :  url + '/public/' + req.files[0].filename,
+                "color" : req.body.color,
+                "small" : req.body.small,
+                "medium" : req.body.medium,
+                "large" : req.body.large,
+                "xl" : req.body.xl
+            }
+        }
+    },{safe: true, upsert: true, new : true},
+    function(err, model) {
+        console.log(err);
+    });
+});
+
+//delete One item from product
+router.route('/deleteOneItemFromProduct/:id/:color').put((req,res) => {
+    ProductSchema.findByIdAndUpdate(req.params.id, {
+        $pull : {
+            "Details" : {color : req.params.color}
+        }
+    },{safe: true, upsert: true, new : true},).then(() => {
+        res.sendStatus(200)
+    }).catch(err => {
+        console.log(err)
+    })
+});
+
+//delete Product
+router.route('/deleteProduct/:id').delete((req, res) => {
+    ProductSchema.findByIdAndRemove(req.params.id, (error, data) => {
+        if (error) {
+            return (error);
+        } else {
+            res.status(200).json({
+                msg: data
+            })
+        }
+    })
+})
 module.exports = router;

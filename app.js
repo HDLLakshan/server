@@ -20,7 +20,7 @@ const app = express();
 
 mongoose.Promise = global.Promise;
 mongoose.connect(dbConfig.db, {
-    useNewUrlParser: true
+    useNewUrlParser: true,useCreateIndex:true,useUnifiedTopology: true,useFindAndModify: false
 }).then(() => {
         console.log('Database successfully connected!')
     },
