@@ -4,6 +4,7 @@ let cors = require('cors');
 let bodyParser = require('body-parser');
 let dbConfig = require('./Database/db');
 
+
 const productRoute = require('./routes/Products.routes');
 const userRoute = require('./routes/user.route');
 const wishlistRoute = require('./routes/wishlist.route');
@@ -33,6 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
 
 app.use(cors());
 app.options('*', cors());
