@@ -20,7 +20,13 @@ let userSchema = new mongoose.Schema({
     PasswordOne: {
         type: String,
         required:true
-    }
+    },
+    roles: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Role"
+        }
+    ]
 }, {
     collection: 'users'
 });
