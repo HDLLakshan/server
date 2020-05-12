@@ -64,21 +64,11 @@ app.use((req, res, next) => {
     next(createError(404));
 });
 
-// app.get('/',function(req,res) {
-//     res.send('Hellow Wrold I m lahiru lakshan');
-//     res.set("Access-Control-Allow-Origin", "*");
-//     res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     // res.setheader('Access-Control-Allow-Origin', 'http://localhost:3000');
-//     // response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD");
-//     next();
-// });
-
 app.use(function (err, req, res, next) {
     console.error(err.message);
     if (!err.statusCode) err.statusCode = 500;
     res.status(err.statusCode).send(err.message);
 });
-//app.listen(port, () => console.log('Server is running on port' + port))
 
 function initial() {
     Role.estimatedDocumentCount((err, count) => {
