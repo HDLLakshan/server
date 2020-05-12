@@ -3,9 +3,10 @@ var express = require('express')
 multer = require('multer')
 uuidv4 = require('uuid/v4'),
 router = express.Router();
+var path = require('path')
+var upload = multer()
 
-
-const DIR = './public/';
+/*const DIR = './public/';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -27,13 +28,47 @@ var upload = multer({
             return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
         }
     }
-});
+}); */
+
+const {Storage} = require('@google-cloud/storage');
+
+const storage = new Storage({projectId: 'the-hanger-af', keyFilename: path.join(__dirname, '../the-hanger-af-1aba20ec4e38.json')});
+
+async function uploadFile(file ,nameid, i) {
+    let bucketName = 'shopz-d_product_image'
+    let bucket = storage.bucket(bucketName)
+
+    let newFileName = "Images" + '/' + nameid + i + file.originalname ;
+
+    let fileUpload = bucket.file(newFileName);
+    const blobStream = fileUpload.createWriteStream({
+        metadata: {
+            contentType: file.mimetype
+        }
+    });
+
+    blobStream.on('error', (error) => {
+        console.log('Something is wrong! Unable to upload at the moment.' + error);
+    });
+
+    blobStream.on('finish', () => {
+        const url = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`; //image url from firebase server
+        console.log(url)
+        return url
+    });
+
+    blobStream.end(file.buffer);
+
+}
+
 
 let ProductSchema = require('../Model/Products');
 
 //Create Product
-router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, next) => {
-    const url = req.protocol + '://' + req.get('host')
+ router.route('/add-product').post(upload.array('ImageOfProduct',5),async (req, res, next) => {
+
+     const d = Date.now()
+
     const product = new ProductSchema({
         _id: new mongoose.Types.ObjectId(),
         ProductName: req.body.ProductName,
@@ -46,7 +81,7 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
 
     for(var i=0;i<req.files.length;i++) {
         product.Details.push({
-            "imgPath": url + '/public/' + req.files[i].filename,
+            "imgPath": "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[i].originalname,
             "color" : req.body.ColorOfImg[i],
             "small" : req.body.StockSmall[i],
             "medium" : req.body.StockMedium[i],
@@ -54,6 +89,7 @@ router.route('/add-product').post(upload.array('ImageOfProduct',5),(req, res, ne
             "xl" : req.body.StockXL[i]
 
         })
+        uploadFile(req.files[i],d,i)
     }
 
     var datetime = new Date();
@@ -198,12 +234,14 @@ router.route('/editItemOfProduct/:id').put((req,res) => {
 })
 
 //add newItem to currentProduct
-router.route('/addnewItemToProduct/:id').post(upload.array('image',5),(req,res) => {
-    const url = req.protocol + '://' + req.get('host')
+router.route('/addnewItemToProduct/:id').post(multer().array('image',5),(req,res) => {
+    const d = Date.now()
+    const i = 99;
+    uploadFile(req.files[0],d,i)
     ProductSchema.findByIdAndUpdate(req.params.id, {
         $push: {
             "Details" : {
-                "imgPath" :  url + '/public/' + req.files[0].filename,
+                "imgPath" :  "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[0].originalname,
                 "color" : req.body.color,
                 "small" : req.body.small,
                 "medium" : req.body.medium,
