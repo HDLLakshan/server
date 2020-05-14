@@ -4,9 +4,9 @@ multer = require('multer')
 uuidv4 = require('uuid/v4'),
 router = express.Router();
 var path = require('path')
-var upload = multer()
+//var upload = multer()
 
-/*const DIR = './public/';
+const DIR = './public/';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -28,9 +28,9 @@ var upload = multer({
             return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
         }
     }
-}); */
+});
 
-const {Storage} = require('@google-cloud/storage');
+/*const {Storage} = require('@google-cloud/storage');
 
 const storage = new Storage({projectId: 'the-hanger-af', keyFilename: path.join(__dirname, '../the-hanger-af-1aba20ec4e38.json')});
 
@@ -59,14 +59,14 @@ async function uploadFile(file ,nameid, i) {
 
     blobStream.end(file.buffer);
 
-}
+} */
 
 
 let ProductSchema = require('../Model/Products');
 
 //Create Product
  router.route('/add-product').post(upload.array('ImageOfProduct',5),async (req, res, next) => {
-
+     const url = req.protocol + '://' + req.get('host')
      const d = Date.now()
 
     const product = new ProductSchema({
@@ -81,15 +81,16 @@ let ProductSchema = require('../Model/Products');
 
     for(var i=0;i<req.files.length;i++) {
         product.Details.push({
-            "imgPath": "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[i].originalname,
+          //  "imgPath": "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[i].originalname,
+            "imgPath": url + '/public/' + req.files[i].filename,
             "color" : req.body.ColorOfImg[i],
             "small" : req.body.StockSmall[i],
             "medium" : req.body.StockMedium[i],
             "large" : req.body.StockLarge[i],
-            "xl" : req.body.StockXL[i]
+            "xl" : req.body.StockXL[i],
 
         })
-        uploadFile(req.files[i],d,i)
+        //uploadFile(req.files[i],d,i)
     }
 
     var datetime = new Date();
@@ -117,7 +118,7 @@ let ProductSchema = require('../Model/Products');
 router.route('/').get((req, res) => {
     ProductSchema.find({}).sort({AddDate:'desc'}).exec((error,data) => {
         if (error) {
-            return next(error)
+            return (error)
         } else {
             res.json(data)
         }
