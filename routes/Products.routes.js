@@ -247,7 +247,7 @@ router.route('/addnewItemToProduct/:id').post(upload.array('image',5),(req,res) 
         $push: {
             "Details" : {
                // "imgPath" :  "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[0].originalname,
-                "imgPath": url + '/public/' + req.files[i].filename,
+                "imgPath": url + '/public/' + req.files[0].filename,
                 "color" : req.body.color,
                 "small" : req.body.small,
                 "medium" : req.body.medium,
