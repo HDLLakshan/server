@@ -5,6 +5,9 @@ let mongoose = require('mongoose'),
 // Rating Model
 let ratingSchema = require('../Model/Rating');
 
+// Products
+let ProductSchema = require('../Model/Products');
+
 // Add Rating
 router.route('/add-rating').post((req, res, next) => {
 
@@ -24,6 +27,17 @@ router.route('/add-rating').post((req, res, next) => {
             rs.save().then(() => {
                 res.sendStatus(200);
             }).catch(err => console.log(err))
+            //update product schema with new rate
+            ProductSchema.findOneAndUpdate(
+                {_id:req.body.productId},
+                {
+                    $set: {
+                        TotRate :req.body.ratingno
+                    }
+                },
+                {new: true}).then(() => console.log('updated')).catch(err => console.log(err));
+
+
         }else{
             ratingSchema.findOneAndUpdate({"productId":req.body.productId},{
                     $push : {
@@ -44,6 +58,15 @@ router.route('/add-rating').post((req, res, next) => {
                 }).then(() => {
                 res.sendStatus(200);
             })
+            //update product schema with new rate
+            ProductSchema.findOneAndUpdate(
+                {_id:req.body.productId},
+                {
+                    $set: {
+                        TotRate :(data.Total + req.body.ratingno)/(data.Count + 1)
+                    }
+                },
+                {new: true}).then(() => console.log('updated')).catch(err => console.log(err));
         }
     })
 

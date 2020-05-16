@@ -25,6 +25,9 @@ let productSchema = new Schema({
         type:String,
     },
     Details:[],
+    TotRate:{
+        type:Number
+    }
 }, {
     collection: 'products'
     });

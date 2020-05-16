@@ -67,7 +67,7 @@ let ProductSchema = require('../Model/Products');
 //Create Product
  router.route('/add-product').post(upload.array('ImageOfProduct',5),async (req, res, next) => {
      const url = req.protocol + '://' + req.get('host')
-     const d = Date.now()
+  //   const d = Date.now()
 
     const product = new ProductSchema({
         _id: new mongoose.Types.ObjectId(),
@@ -76,7 +76,8 @@ let ProductSchema = require('../Model/Products');
         Category: req.body.Category,
         PricePerUnit: req.body.PricePerUnit,
         SubCategory: req.body.SubCategory,
-        Discount : req.body.Discount
+        Discount : req.body.Discount,
+        TotRate: 0
     });
 
     for(var i=0;i<req.files.length;i++) {
@@ -235,14 +236,18 @@ router.route('/editItemOfProduct/:id').put((req,res) => {
 })
 
 //add newItem to currentProduct
-router.route('/addnewItemToProduct/:id').post(multer().array('image',5),(req,res) => {
-    const d = Date.now()
-    const i = 99;
-    uploadFile(req.files[0],d,i)
+router.route('/addnewItemToProduct/:id').post(upload.array('image',5),(req,res) => {
+ //   const d = Date.now()
+  //  const i = 99;
+   // uploadFile(req.files[0],d,i)
+    const url = req.protocol + '://' + req.get('host')
+
+
     ProductSchema.findByIdAndUpdate(req.params.id, {
         $push: {
             "Details" : {
-                "imgPath" :  "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[0].originalname,
+               // "imgPath" :  "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[0].originalname,
+                "imgPath": url + '/public/' + req.files[i].filename,
                 "color" : req.body.color,
                 "small" : req.body.small,
                 "medium" : req.body.medium,
