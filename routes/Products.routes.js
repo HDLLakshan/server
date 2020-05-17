@@ -115,7 +115,7 @@ let ProductSchema = require('../Model/Products');
 
 });
 
-// READ Products
+// READ Products sort with date
 router.route('/').get((req, res) => {
     ProductSchema.find({}).sort({AddDate:'desc'}).exec((error,data) => {
         if (error) {
@@ -140,7 +140,7 @@ router.route('/view-product/:id').get((req, res) => {
 // Get Products relevant to Category
 router.route('/get-products/:category').get((req,res) => {
     var Query = {SubCategory : req.params.category}
-    ProductSchema.find(Query, (error,data) => {
+    ProductSchema.find(Query).sort({TotRate:'desc'}).exec((error,data) => {
         if (error) {
             return next(error)
         } else {
