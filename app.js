@@ -10,11 +10,13 @@ const userRoute = require('./routes/user.route');
 const wishlistRoute = require('./routes/wishlist.route');
 const shoppingCartRoute = require('./routes/shoppingcart.route');
 const billingRoute = require('./routes/billing.route');
-const paymentRoute = require('./routes/payment.route');
+const creditcardRoute = require('./routes/creditcard.route');
 const ratingRoute = require('./routes/rating.route');
 const AdminRouter = require('./routes/Admin.route');
 const CategoryRouter = require('./routes/Category.route');
 const AdminUserRouter = require('./routes/Admin_User.route');
+
+
 
 
 const app = express();
@@ -51,11 +53,12 @@ app.use('/users', userRoute);
 app.use('/wishlist', wishlistRoute);
 app.use('/shoppingcart', shoppingCartRoute);
 app.use('/billing',billingRoute);
-app.use('/payment',paymentRoute);
+app.use('/credit-card',creditcardRoute);
 app.use('/rating',ratingRoute);
 app.use('/admin',AdminRouter);
 app.use('/category',CategoryRouter);
 app.use('/userAdmin',AdminUserRouter);
+
 
 var port = process.env.PORT || 4000;
 

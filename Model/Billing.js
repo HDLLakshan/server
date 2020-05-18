@@ -11,10 +11,7 @@ let billingSchema = new Schema({
     lastName: {
         type: String
     },
-    add1: {
-        type: String
-    },
-    add2: {
+    billAddress: {
         type: String
     },
     city: {
@@ -40,11 +37,10 @@ let billingSchema = new Schema({
     },
     cashDelivery:{
         type:Boolean
+    },
+    totalPay:{
+        type:Number
     }
-
-
-
-
 }, {
     collection: 'billing'
 })
