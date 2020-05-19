@@ -38,9 +38,7 @@ let billingSchema = new Schema({
     cashDelivery:{
         type:Boolean
     },
-    totalPay:{
-        type:Number
-    }
+    totalPay:[],
 }, {
     collection: 'billing'
 })

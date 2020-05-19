@@ -69,5 +69,24 @@ router.route('/delete-billing/:id').delete((req, res, next) => {
         }
     })
 })
+//Save total payment
+router.route('/add-payment/:id').post((req, res) => {
+    var datetime = new Date();
+    var time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+    var date_time = datetime.toISOString().slice(0,10) + " "+time
+    var Query = {userName : req.params.id}
+    billingSchema.findOneAndUpdate(Query, {
+            $push: {
+                "totalPay" : {
+
+                    "totpay" : req.body.totpay,
+                    "timedate" : date_time
+                }
+            }
+        },{safe: true, upsert: true, new : true},
+        function(err, model) {
+            console.log(err);
+        });
+});
 
 module.exports = router;
