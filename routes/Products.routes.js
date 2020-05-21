@@ -30,6 +30,7 @@ var upload = multer({
     }
 });
 
+//save images in google server storage
 /*const {Storage} = require('@google-cloud/storage');
 
 const storage = new Storage({projectId: 'the-hanger-af', keyFilename: path.join(__dirname, '../the-hanger-af-1aba20ec4e38.json')});
@@ -162,31 +163,33 @@ router.route('/search/:id').get((req,res) => {
 });
 
 //update when purchase
-router.route('/sold/:id/:color/:size/:quantity').post(async (req,res) => {
+router.route('/sold').post(async (req,res) => {
 
-     ProductSchema.findById(req.params.id, (error, data) => {
-         const index = data.Details.map(e => e.color).indexOf(req.params.color);
-         const currentval = data.Details[index][req.params.size]
-         newVal = parseInt(currentval) - parseInt(req.params.quantity)
+  for(let i=0;i<req.body.length;i++) {
+      ProductSchema.findById(req.body[i].ProductId, (error, data) => {
+          const index = data.Details.map(e => e.color).indexOf(req.body[i].Color);
+          const currentval = data.Details[index][req.body[i].Size]
+          newVal = parseInt(currentval) - parseInt(req.body[i].Quantity)
 
 
-         var s = "Details.$." + req.params.size;
+          var s = "Details.$." + req.body[i].Size;
 
-         ProductSchema.findOneAndUpdate(
-             {_id: req.params.id, "Details.color": req.params.color},
-             {
-                 $set: {
-                     [s]: newVal
-                 }
-             },
-             {new: true})
-             .then(() => {
-                 res.sendStatus(200);
-             }).catch(err => {
-             console.log("eorrrro")
-             console.error(err)
-         })
-     });
+          ProductSchema.findOneAndUpdate(
+              {_id: req.body[i].ProductId, "Details.color": req.body[i].Color},
+              {
+                  $set: {
+                      [s]: newVal
+                  }
+              },
+              {new: true})
+              .then(() => {
+                  console.log("updated" + req.body[i].ProductId + s)
+              }).catch(err => {
+              console.log("eorrrro")
+              console.error(err)
+          })
+      });
+  }
 })
 
 //update Products Details
