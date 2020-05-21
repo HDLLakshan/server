@@ -84,6 +84,18 @@ router.route('/get-rate-comments/:id').get((req,res) => {
     })
 })
 
+//get product rate and comments
+router.route('/get-rate/:id').get((req,res) => {
+    var Query = {userName : req.params.id}
+    ratingSchema.findOne(Query, (error,data) => {
+        if (error) {
+            return next(error)
+        } else {
+            res.json(data)
+        }
+    })
+})
+
 // get all ratings and comments
 router.route('/get-rating').get((req, res) => {
     ratingSchema.find((error, data) => {

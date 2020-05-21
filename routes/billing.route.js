@@ -29,21 +29,35 @@ router.route('/get-billing').get((req, res) => {
     })
 })
 
-router.route('/update-billing/:id').put((req, res, next) => {
-    billingSchema.findByIdAndUpdate(req.params.id, {
-        $set: req.body
-    }, (error, data) => {
+router.route('/update-bill/:id').put((req,res) => {
+    var Query = {userName : req.params.id}
+    billingSchema.findOneAndUpdate(Query,{
+            $set: req.body
+        },
+
+        (error,data) => {
+
+        if (error) {
+            return next(error)
+        } else {
+            res.json(data)
+        }
+    })
+})
+
+router.route('/get-one-bill/:username').get((req,res) => {
+    billingSchema.findOne({userName: req.params.username}, (error,data) => {
         if (error) {
             return next(error);
             console.log(error)
         } else {
             res.json(data)
-            console.log('successfully updated billing !')
+            console.log('successfully retrieved a bill!' )
         }
     })
 })
 
-// Delete Student
+// Delete Single Bill
 router.route('/delete-billing/:id').delete((req, res, next) => {
     billingSchema.findByIdAndRemove(req.params.id, (error, data) => {
         if (error) {
@@ -55,27 +69,24 @@ router.route('/delete-billing/:id').delete((req, res, next) => {
         }
     })
 })
-
-// Get Single Student
-router.route('/get-one-billing/:id').get((req, res) => {
-    billingSchema.findById(req.params.id, (error, data) => {
-        if (error) {
-            return next(error)
-        } else {
-            res.json(data);
-        }
-    })
-})
-
-router.route('/getbill/:id').get((req,res) => {
+//Save total payment
+router.route('/add-payment/:id').post((req, res) => {
+    var datetime = new Date();
+    var time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+    var date_time = datetime.toISOString().slice(0,10) + " "+time
     var Query = {userName : req.params.id}
-    billingSchema.find(Query,(error,data) => {
-        if(error){
-            return next(error)
+    billingSchema.findOneAndUpdate(Query, {
+            $push: {
+                "totalPay" : {
 
-        }else{
-            res.json(data)
-        }
-    })
-})
+                    "totpay" : req.body.totpay,
+                    "timedate" : date_time
+                }
+            }
+        },{safe: true, upsert: true, new : true},
+        function(err, model) {
+            console.log(err);
+        });
+});
+
 module.exports = router;
