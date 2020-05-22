@@ -259,10 +259,11 @@ router.route('/addnewItemToProduct/:id').post(upload.array('image',5),(req,res) 
                 "xl" : req.body.xl
             }
         }
-    },{safe: true, upsert: true, new : true},
-    function(err, model) {
-        console.log(err);
-    });
+    },{safe: true, upsert: true, new : true},).then(() => {
+        res.sendStatus(200)
+    }).catch(err => {
+        console.log(err)
+    })
 });
 
 //delete One item from product
