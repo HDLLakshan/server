@@ -33,7 +33,7 @@ let productSchema = new Schema({
     TotRate:{
         type:Number
     },
-    lastModifiedBy:{
+    addBy:{
         type:String
     }
 }, {
