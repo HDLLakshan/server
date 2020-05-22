@@ -70,7 +70,7 @@ router.route('/delete-billing/:id').delete((req, res, next) => {
     })
 })
 //Save total payment
-router.route('/add-payment/:id').post((req, res) => {
+router.route('/add-payment/:id/:Tot').post((req, res) => {
     var datetime = new Date();
     var time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
     var date_time = datetime.toISOString().slice(0,10) + " "+time
@@ -79,14 +79,19 @@ router.route('/add-payment/:id').post((req, res) => {
             $push: {
                 "totalPay" : {
 
-                    "totpay" : req.body.totpay,
+                    "totpay" : req.params.Tot,
                     "timedate" : date_time
                 }
             }
-        },{safe: true, upsert: true, new : true},
-        function(err, model) {
-            console.log(err);
-        });
+
+        },{safe: true, upsert: true, new : true})
+        .then(() => {
+            console.log("updated"),
+                res.sendStatus(200);
+        }).catch(err => {
+        console.log("eorrrro")
+        console.error(err)
+    })
 });
 
 module.exports = router;

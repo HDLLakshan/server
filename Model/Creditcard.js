@@ -20,7 +20,10 @@ let creditcardSchema = new Schema({
     },
     cvc: {
         type: String
-    }
+    },
+    cardType:{
+        type:String
+    },
 
 }, {
     collection: 'creditcard'

@@ -8,6 +8,26 @@ let ratingSchema = require('../Model/Rating');
 // Products
 let ProductSchema = require('../Model/Products');
 
+router.route('/add-rating1/:id').put((req, res) => {
+    ratingSchema.update(
+        {productId:req.params.id},
+        {
+            $push : {
+                "RateComment":{
+                    "userid" : req.body.userName,
+                    "comment" : req.body.comment,
+                    "rateno" : req.body.ratingno,
+                }
+            }
+        },{safe: true, upsert: true,new:true},
+        function(err, model) {
+            console.log(err);
+        }).then(() => {
+        console.log("llll")
+        res.sendStatus(200);
+    })
+})
+
 // Add Rating
 router.route('/add-rating').post((req, res, next) => {
 
@@ -39,31 +59,32 @@ router.route('/add-rating').post((req, res, next) => {
 
 
         }else{
-            ratingSchema.findOneAndUpdate({"productId":req.body.productId},{
-                    $push : {
-                        "RateComment":{
-                            "userid" : req.body.userName,
-                            "comment" : req.body.comment,
-                            "rateno" : req.body.ratingno,
-                        }
-                    },
-                    $set : {
-                        "Total" : data.Total + req.body.ratingno,
-                        "Count" : data.Count + 1,
-                        "Rate" : (data.Total + req.body.ratingno)/(data.Count + 1)
-                    }
-                },{safe: true, upsert: true, new : true},
+            data.RateComment.push({
+                "userid" : req.body.userName,
+                "comment" : req.body.comment,
+                "rateno" : req.body.ratingno,
+            })
+            data.Total = data.Total + req.body.ratingno,
+                data.Count = data.Count + 1,
+                data.Rate = (data.Total )/(data.Count )
+            ratingSchema.findOneAndUpdate(
+                {_id:data._id},{
+                    $set:data
+                }
+              ,{safe: true, upsert: true,new:true},
                 function(err, model) {
                     console.log(err);
                 }).then(() => {
+                    console.log("llll")
                 res.sendStatus(200);
             })
+            console.log(data.RateComment)
             //update product schema with new rate
             ProductSchema.findOneAndUpdate(
                 {_id:req.body.productId},
                 {
                     $set: {
-                        TotRate :(data.Total + req.body.ratingno)/(data.Count + 1)
+                        TotRate :(data.Total)/(data.Count)
                     }
                 },
                 {new: true}).then(() => console.log('updated')).catch(err => console.log(err));

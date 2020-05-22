@@ -44,7 +44,7 @@ router.route('/update-creditcard/:id').put((req,res) => {
         })
 })
 
-router.route('/get-single-creditcard/:username').get((req,res) => {
+router.route('/get-single-creditcard/:username').get((req,res,next) => {
     creditcardSchema.findOne({userName: req.params.username}, (error,data) => {
         if (error) {
             return next(error);
