@@ -78,6 +78,7 @@ let ProductSchema = require('../Model/Products');
         PricePerUnit: req.body.PricePerUnit,
         SubCategory: req.body.SubCategory,
         Discount : req.body.Discount,
+        addBy : req.body.addBy,
         TotRate: 0
     });
 
