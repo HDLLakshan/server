@@ -4,21 +4,20 @@ const jwt = require("jsonwebtoken");
 const validateRegisterInput = require("../Validation/validator");
 const validateLoginInput = require("../Validation/loginvalidator");
 let userSchema = require('../Model/Users');
-let db= require('../Database/db');
+let db = require('../Database/db');
 const db1 = require("../Model");
 const Role = db1.role;
 
 
-
-router.post("/register", (req, res, next) =>{
-    const { errors, isValid } = validateRegisterInput(req.body);
+router.post("/register", (req, res, next) => {
+    const {errors, isValid} = validateRegisterInput(req.body);
     console.log(errors);
-    if(!isValid){
+    if (!isValid) {
         return res.json(errors);
     }
-    userSchema.findOne({ Email: req.body.Email }).then(user => {
+    userSchema.findOne({Email: req.body.Email}).then(user => {
         if (user) {
-            return res.json({ Email: "Email already exists" });
+            return res.json({Email: "Email already exists"});
         } else {
             // const newUser = new userSchema({
             //     FirstName: req.body.FirstName,
@@ -40,7 +39,7 @@ router.post("/register", (req, res, next) =>{
 
             console.log(req.body.roles);
             if (req.body.roles) {
-                var query = {name : req.body.roles};
+                var query = {name: req.body.roles};
                 Role.findOne(query, (erro, roles) => {
                         if (erro) {
                             res.status(500).send({message: erro});
@@ -51,10 +50,11 @@ router.post("/register", (req, res, next) =>{
                             FirstName: req.body.FirstName,
                             LastName: req.body.LastName,
                             Username: req.body.Username,
-                            Email : req.body.Email,
-                            PasswordOne : req.body.PasswordOne,
-                            roles : roles._id
+                            Email: req.body.Email,
+                            PasswordOne: req.body.PasswordOne,
+                            roles: roles._id
                         });
+
                         bcrypt.genSalt(10, (err, salt) => {
                             bcrypt.hash(newUser.PasswordOne, salt, (err, hash) => {
                                 if (err) throw err;
@@ -65,7 +65,7 @@ router.post("/register", (req, res, next) =>{
                                     .catch(err => console.log(err));
                             });
                         });
-                       console.log("user registered");
+                        console.log("user registered");
                     }
                 );
             } else {
@@ -79,9 +79,9 @@ router.post("/register", (req, res, next) =>{
                         FirstName: req.body.FirstName,
                         LastName: req.body.LastName,
                         Username: req.body.Username,
-                        Email : req.body.Email,
-                        PasswordOne : req.body.PasswordOne,
-                        roles : role._id
+                        Email: req.body.Email,
+                        PasswordOne: req.body.PasswordOne,
+                        roles: role._id
                     });
                     console.log(newUser1);
                     bcrypt.genSalt(10, (err, salt) => {
@@ -106,7 +106,7 @@ router.post("/login", (req, res) => {
         "Access-Control-Allow-Headers",
         "x-access-token, Origin, Content-Type, Accept"
     );
-    const { errors, isValid } = validateLoginInput(req.body);
+    const {errors, isValid} = validateLoginInput(req.body);
 // Check validation
     if (!isValid) {
         return res.json(errors);
@@ -114,10 +114,10 @@ router.post("/login", (req, res) => {
     const Username = req.body.Username;
     const Password = req.body.Password;
 
-    userSchema.findOne({ Username }).then(user => {
+    userSchema.findOne({Username}).then(user => {
         // Check if user exists
         if (!user) {
-            return res.json({ Username: "Username not found" });
+            return res.json({Username: "Username not found"});
         }
         bcrypt.compare(Password, user.PasswordOne).then(isMatch => {
             if (isMatch) {
@@ -143,10 +143,10 @@ router.post("/login", (req, res) => {
                 );
 
                 var authorities = [];
-                var query = {id : user.roles[0]};
-                Role.findById(user.roles[0], null, null,(err, roles) => {
+                var query = {id: user.roles[0]};
+                Role.findById(user.roles[0], null, null, (err, roles) => {
 
-                    if(user.roles.length===1){
+                    if (user.roles.length === 1) {
                         authorities.push("ROLE_" + roles.name.toUpperCase());
                     }
 
@@ -160,15 +160,15 @@ router.post("/login", (req, res) => {
 
             } else {
                 return res
-                    .json({ Password: "Password incorrect" });
+                    .json({Password: "Password incorrect"});
             }
         });
     });
 });
 
 router.post("/getOne:Username", (req, res) => {
-console.log(req.params.Username);
-    userSchema.findOne({ Username: req.params.Username }).then(user => {
+    console.log(req.params.Username);
+    userSchema.findOne({Username: req.params.Username}).then(user => {
         return res.json(user);
     });
 
@@ -215,6 +215,15 @@ router.route('/edit-details:Email').put((req, res, next) => {
     });
 });
 
+router.route('/delete:Email').delete((req, res, next) => {
+    userSchema.findOneAndDelete({email: req.params.Email}).then(() => {
+        res.sendStatus(200);
+    }).catch(err => {
+        console.log(err);
+        res.sendStatus(500);
+    });
+});
+
 // router.put("/edit-details", (req, res, next)=> {
 //     // userSchema.findOne({Email: req.body.Email}).then(user => {
 //     //     if (user) {
@@ -248,5 +257,11 @@ router.route('/edit-details:Email').put((req, res, next) => {
 //     //     }
 //     // })
 // });
+
+router.route('/all').get((req, res) => {
+    userSchema.find()
+        .then(users => res.json(users))
+        .catch(err => res.status(400).json('Error: ' + err));
+});
 
 module.exports = router;
