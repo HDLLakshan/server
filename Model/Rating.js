@@ -3,17 +3,18 @@ const Schema = mongoose.Schema;
 
 let ratingSchema = new Schema({
 
-    userName: {
-        type: String
+    productId:{
+        type:String
     },
-    productId: {
-        type: String
+    RateComment:[],
+    Total:{
+        type:Number
     },
-    ratingno: {
-        type: Number
+    Count:{
+        type:Number
     },
-    comment:{
-        type: String
+    Rate:{
+        type:Number
     }
 
 }, {

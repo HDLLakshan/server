@@ -4,9 +4,9 @@ multer = require('multer')
 uuidv4 = require('uuid/v4'),
 router = express.Router();
 var path = require('path')
-var upload = multer()
+//var upload = multer()
 
-/*const DIR = './public/';
+const DIR = './public/';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -28,9 +28,10 @@ var upload = multer({
             return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
         }
     }
-}); */
+});
 
-const {Storage} = require('@google-cloud/storage');
+//save images in google server storage
+/*const {Storage} = require('@google-cloud/storage');
 
 const storage = new Storage({projectId: 'the-hanger-af', keyFilename: path.join(__dirname, '../the-hanger-af-1aba20ec4e38.json')});
 
@@ -59,15 +60,15 @@ async function uploadFile(file ,nameid, i) {
 
     blobStream.end(file.buffer);
 
-}
+} */
 
 
 let ProductSchema = require('../Model/Products');
 
 //Create Product
  router.route('/add-product').post(upload.array('ImageOfProduct',5),async (req, res, next) => {
-
-     const d = Date.now()
+     const url = req.protocol + '://' + req.get('host')
+  //   const d = Date.now()
 
     const product = new ProductSchema({
         _id: new mongoose.Types.ObjectId(),
@@ -76,20 +77,23 @@ let ProductSchema = require('../Model/Products');
         Category: req.body.Category,
         PricePerUnit: req.body.PricePerUnit,
         SubCategory: req.body.SubCategory,
-        Discount : req.body.Discount
+        Discount : req.body.Discount,
+        addBy : req.body.addBy,
+        TotRate: 0
     });
 
     for(var i=0;i<req.files.length;i++) {
         product.Details.push({
-            "imgPath": "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[i].originalname,
+          //  "imgPath": "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[i].originalname,
+            "imgPath": url + '/public/' + req.files[i].filename,
             "color" : req.body.ColorOfImg[i],
             "small" : req.body.StockSmall[i],
             "medium" : req.body.StockMedium[i],
             "large" : req.body.StockLarge[i],
-            "xl" : req.body.StockXL[i]
+            "xl" : req.body.StockXL[i],
 
         })
-        uploadFile(req.files[i],d,i)
+        //uploadFile(req.files[i],d,i)
     }
 
     var datetime = new Date();
@@ -113,11 +117,11 @@ let ProductSchema = require('../Model/Products');
 
 });
 
-// READ Products
+// READ Products sort with date
 router.route('/').get((req, res) => {
     ProductSchema.find({}).sort({AddDate:'desc'}).exec((error,data) => {
         if (error) {
-            return next(error)
+            return (error)
         } else {
             res.json(data)
         }
@@ -138,7 +142,7 @@ router.route('/view-product/:id').get((req, res) => {
 // Get Products relevant to Category
 router.route('/get-products/:category').get((req,res) => {
     var Query = {SubCategory : req.params.category}
-    ProductSchema.find(Query, (error,data) => {
+    ProductSchema.find(Query).sort({TotRate:'desc'}).exec((error,data) => {
         if (error) {
             return next(error)
         } else {
@@ -160,31 +164,34 @@ router.route('/search/:id').get((req,res) => {
 });
 
 //update when purchase
-router.route('/sold/:id/:color/:size/:quantity').post(async (req,res) => {
+router.route('/sold').post( (req,res) => {
 
-     ProductSchema.findById(req.params.id, (error, data) => {
-         const index = data.Details.map(e => e.color).indexOf(req.params.color);
-         const currentval = data.Details[index][req.params.size]
-         newVal = parseInt(currentval) - parseInt(req.params.quantity)
+  for(let i=0;i<req.body.length;i++) {
+      ProductSchema.findById(req.body[i].ProductId, (error, data) => {
+          const index = data.Details.map(e => e.color).indexOf(req.body[i].Color);
+          const currentval = data.Details[index][req.body[i].Size]
+          newVal = parseInt(currentval) - parseInt(req.body[i].Quantity)
 
 
-         var s = "Details.$." + req.params.size;
+          var s = "Details.$." + req.body[i].Size;
 
-         ProductSchema.findOneAndUpdate(
-             {_id: req.params.id, "Details.color": req.params.color},
-             {
-                 $set: {
-                     [s]: newVal
-                 }
-             },
-             {new: true})
-             .then(() => {
-                 res.sendStatus(200);
-             }).catch(err => {
-             console.log("eorrrro")
-             console.error(err)
-         })
-     });
+          ProductSchema.findOneAndUpdate(
+              {_id: req.body[i].ProductId, "Details.color": req.body[i].Color},
+              {
+                  $set: {
+                      [s]: newVal
+                  }
+              },
+              {new: true})
+              .then(() => {
+                  console.log("updated" + req.body[i].ProductId + s),
+                      res.sendStatus(200);
+              }).catch(err => {
+              console.log("eorrrro")
+              console.error(err)
+          })
+      });
+  }
 })
 
 //update Products Details
@@ -234,14 +241,18 @@ router.route('/editItemOfProduct/:id').put((req,res) => {
 })
 
 //add newItem to currentProduct
-router.route('/addnewItemToProduct/:id').post(multer().array('image',5),(req,res) => {
-    const d = Date.now()
-    const i = 99;
-    uploadFile(req.files[0],d,i)
+router.route('/addnewItemToProduct/:id').post(upload.array('image',5),(req,res) => {
+ //   const d = Date.now()
+  //  const i = 99;
+   // uploadFile(req.files[0],d,i)
+    const url = req.protocol + '://' + req.get('host')
+
+
     ProductSchema.findByIdAndUpdate(req.params.id, {
         $push: {
             "Details" : {
-                "imgPath" :  "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[0].originalname,
+               // "imgPath" :  "https://storage.googleapis.com/shopz-d_product_image/Images/" + d + i + req.files[0].originalname,
+                "imgPath": url + '/public/' + req.files[0].filename,
                 "color" : req.body.color,
                 "small" : req.body.small,
                 "medium" : req.body.medium,
@@ -249,10 +260,11 @@ router.route('/addnewItemToProduct/:id').post(multer().array('image',5),(req,res
                 "xl" : req.body.xl
             }
         }
-    },{safe: true, upsert: true, new : true},
-    function(err, model) {
-        console.log(err);
-    });
+    },{safe: true, upsert: true, new : true},).then(() => {
+        res.sendStatus(200)
+    }).catch(err => {
+        console.log(err)
+    })
 });
 
 //delete One item from product

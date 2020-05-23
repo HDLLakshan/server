@@ -4,19 +4,24 @@ const Schema = mongoose.Schema;
 let productSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     ProductName: {
-        type: String
+        type: String,
+        weight:10
     },
     ProductBrand: {
-      type:String
+      type:String,
+        weight: 5
     },
     Category: {
-        type: String
+        type: String,
+        weight: 8
     },
     PricePerUnit: {
-        type: Number
+        type: Number,
+        weight:7
     },
     SubCategory: {
-        type: String
+        type: String,
+        weight:7
     },
     Discount: {
         type: Number
@@ -25,10 +30,17 @@ let productSchema = new Schema({
         type:String,
     },
     Details:[],
+    TotRate:{
+        type:Number
+    },
+    addBy:{
+        type:String
+    }
 }, {
     collection: 'products'
     });
 productSchema.index({'$**': 'text'});
+
 
 
 module.exports = mongoose.model('Product', productSchema);

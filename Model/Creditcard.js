@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let paymentSchema = new Schema({
+let creditcardSchema = new Schema({
 
     userName: {
         type: String
@@ -20,10 +20,13 @@ let paymentSchema = new Schema({
     },
     cvc: {
         type: String
-    }
+    },
+    cardType:{
+        type:String
+    },
 
 }, {
-    collection: 'payment'
+    collection: 'creditcard'
 })
 
-module.exports = mongoose.model('Payment', paymentSchema)
+module.exports = mongoose.model('Creditcard', creditcardSchema)
