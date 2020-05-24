@@ -80,7 +80,7 @@ function MailSender(User) {
         from: 'hanger24x7@gmail.com',
         to: User.email,
         subject: 'Login Details',
-        text: `Welcome to The Hanger Fashion Store staff\n` +
+        text: `Welcome to The Rare Fashion Store staff\n` +
             `Here is your username and password\n` +
             `User name: ${User.username} \n` +
             `Password : ${User.password}\n` +
