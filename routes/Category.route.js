@@ -26,7 +26,7 @@ router.route('/add').post((req,res)=>{
     const subCategory = req.body.subCategory;
     const newCategory = new categoryRoute({name,slug,description,subCategory});
 
-    newCategory.save().then(()=> res.json('Category added')).catch(err => res.status(400).json('Error'+ err));
+    newCategory.save().then(()=> res.sendStatus(200)).catch(err => res.sendStatus(400).json('Error'+ err));
 });
 
 //Deleting product managers

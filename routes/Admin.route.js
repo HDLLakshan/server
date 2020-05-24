@@ -98,8 +98,11 @@ function MailSender(User) {
 
 //Deleting product managers
 router.route('/:email').delete((req, res) => {
+    console
     ProdMan.findOneAndDelete({email: req.params.email}).then(() => {
-        userSchema.findOneAndDelete({Email: req.params.email}).then(() => {}).catch(err => {
+        userSchema.findOneAndDelete({Email: req.params.email}).then(() => {
+            res.sendStatus(200);
+        }).catch(err => {
             console.log(err);
             res.sendStatus(500);
         });
