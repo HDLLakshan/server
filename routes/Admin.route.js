@@ -129,6 +129,7 @@ router.route('/:email').put((req, res) => {
         bcrypt.hash(User.PasswordOne, salt, (err, hash) => {
             if (err) throw err;
             User.PasswordOne = hash;
+            console.log(User.PasswordOne)
         });
     });
 
