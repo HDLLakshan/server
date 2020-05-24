@@ -80,7 +80,8 @@ router.route('/add-payment/:id/:Tot').post((req, res) => {
                 "totalPay" : {
 
                     "totpay" : req.params.Tot,
-                    "timedate" : date_time
+                    "timedate" : date_time,
+                    "productlist": req.body
                 }
             }
 
